@@ -41,13 +41,13 @@ import './css/novel.css';
           'id': 'magazine',
           css: {
             position: 'relative',
-            with: defaultsOption.with || '100%',
+            width: defaultsOption.width || '100%',
             height: defaultsOption.height || '100%',
             'touch-action': 'none',
             overflow: 'hidden'
           }
         })
-        _content.html('<div style="fontSize:' + defaultsOption.fontSize + 'px' + '; background: ' + defaultsOption.bgColor + '" class="pages_box" id="pages"></div><div class="content_box"}><div class="contentText_box" id="contentText"></div></div>')
+        _content.html('<div style="font-size:' + defaultsOption.fontSize + 'px;' + ' background: ' + defaultsOption.bgColor + '" class="pages_box" id="pages"></div><div class="content_box"><div class="contentText_box" id="contentText"></div></div>')
       }
       var _navPannel = $('<div/>', {
         class: defaultsOption.showFont ? 'nav_pannel' : 'nav_pannel hidden_navpannel',
@@ -99,7 +99,8 @@ import './css/novel.css';
         setBgstyle()
       })
       $('.bk_container').each(function (index) {
-        $(this).on('click', () => {
+        $(this).on('click', (e) => {
+          e.stopPropagation()
           defaultsOption.bgColor = colorBgArray[index].color
           setBgstyle();
         })
@@ -121,6 +122,8 @@ import './css/novel.css';
         defaultsOption.showNavBottom = !defaultsOption.showNavBottom;
         defaultsOption.showChapterNav = false;
         $('.bk_bottom_nav').toggleClass('show_nav')
+        $('.nav_pannel').addClass('hidden_navpannel')
+        $('.icon_ft').removeClass('current')
       })
     }
 
@@ -165,6 +168,7 @@ import './css/novel.css';
             turned: function (_e, _page, _view, _m) {
               if (typeof defaultsOption.turned === 'function') {
                 var ReaderContent = $(defaultsOption.element);
+                ReaderContent.unbind();
                 ReaderContent.on('turned', function () {
                   defaultsOption.turned(_page, _view);
                 })
