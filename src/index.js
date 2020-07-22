@@ -26,7 +26,11 @@ import './css/novel.css';
       turnCorners: 'bl,br', //翻页方向
       turning: function () { }, // 翻页中回调
       turned: function () { }, // 翻页结束
+      showFont: false,
+      showNavBottom: true,
+      showChapterNav: false
     }
+    const colorBgArray = [{ color: '#fff' }, { color: '#567' }, { color: '#edd566' }, { color: '#f98' }, { color: '#000' }, { color: 'rgb(233, 223, 199)' }];
     function addDom() {
       var ReaderContent = $(defaultsOption.element);
       if (!defaultsOption.element) new Error('root element required');
@@ -45,12 +49,79 @@ import './css/novel.css';
         })
         _content.html('<div style="fontSize:' + defaultsOption.fontSize + 'px' + '; background: ' + defaultsOption.bgColor + '" class="pages_box" id="pages"></div><div class="content_box"}><div class="contentText_box" id="contentText"></div></div>')
       }
+      var _navPannel = $('<div/>', {
+        class: defaultsOption.showFont ? 'nav_pannel' : 'nav_pannel hidden_navpannel',
+      })
+      _navPannel.html('<div class="child_mod"><span>字号</span><button id="bgFontbtn" class="fontsize_button">大</button><button id="smFontbtn" class="fontsize_button">小</button></div><div class="child_mod"> <span class="bgtext">背景</span><div class="bk_container bg1"><div class="bk_container_current"></div></div><div class="bk_container bg2"><div class="bk_container_current"></div></div><div class="bk_container bg3"><div class="bk_container_current"></div></div><div class="bk_container bg4"><div class="bk_container_current"></div></div><div class="bk_container bg5"><div class="bk_container_current"></div></div><div class="bk_container bg6"><div class="bk_container_current"></div></div></div>')
       var _alert = $('<div/>', {
         class: 'alert_box',
         id: 'alert'
       })
+      var _bottomNav = $('<div/>', {
+        class: defaultsOption.showNavBottom ? 'bk_bottom_nav show_nav' : 'bk_bottom_nav'
+      })
+      _bottomNav.html('<div class="item"><div class="item_wrap"><div class="common_nt item_hidden"></div><div class="icon_text">目录</div></div></div><div class="item" id="setFontbtn"><div class="item_wrap"><div class="common_nt icon_ft"></div><div class="icon_text">字体</div> </div></div><div id="nightBtn" class="item showngiht"><div class="item_wrap"><div class="common_nt icon_nt"></div><div class="icon_text">夜间</div> </div></div><div id="dayBtn" class="item hidenday"><div class="item_wrap"><div class="common_nt icon_daytime"></div><div class="icon_text">白天</div> </div></div>')
       ReaderContent.append(_content);
+      ReaderContent.append(_navPannel);
+      ReaderContent.append(_bottomNav);
       ReaderContent.append(_alert);
+    }
+
+    function addEvent() {
+      var $fontBtn = $('#setFontbtn');
+      var $nightBtn = $('#nightBtn');
+      var $dayBtn = $('#dayBtn');
+      var $bgFontbtn = $('#bgFontbtn');
+      var $smFontbtn = $('#smFontbtn');
+      var $page = $("#pages");
+
+      $fontBtn.on('click', (e) => {
+        e.stopPropagation();
+        $('.nav_pannel').toggleClass('hidden_navpannel')
+        $('.icon_ft').toggleClass('current')
+      })
+      $nightBtn.on('click', (e) => {
+        e.stopPropagation();
+        $nightBtn.removeClass('showngiht')
+        $nightBtn.addClass('hidennight')
+        $dayBtn.removeClass('hidenday')
+        $dayBtn.addClass('showday')
+        defaultsOption.bgColor = '#000'
+        setBgstyle()
+      })
+      $dayBtn.on('click', (e) => {
+        e.stopPropagation();
+        $nightBtn.removeClass('hidennight')
+        $nightBtn.addClass('showngiht')
+        $dayBtn.removeClass('showday')
+        $dayBtn.addClass('hidenday')
+        defaultsOption.bgColor = '#e9dfc7'
+        setBgstyle()
+      })
+      $('.bk_container').each(function (index) {
+        $(this).on('click', () => {
+          defaultsOption.bgColor = colorBgArray[index].color
+          setBgstyle();
+        })
+      })
+      $bgFontbtn.on('click', (e) => {
+        e.stopPropagation();
+        if (defaultsOption.fontSize > 20) return
+        defaultsOption.fontSize += 1
+        setFontSize()
+      })
+      $smFontbtn.on('click', (e) => {
+        e.stopPropagation();
+        if (defaultsOption.fontSize < 12) return
+        defaultsOption.fontSize -= 1
+        setFontSize()
+      })
+      $page.on('click', (e) => {
+        e.stopPropagation();
+        defaultsOption.showNavBottom = !defaultsOption.showNavBottom;
+        defaultsOption.showChapterNav = false;
+        $('.bk_bottom_nav').toggleClass('show_nav')
+      })
     }
 
     function initPage(writeStr, pageNumber) {
@@ -92,7 +163,12 @@ import './css/novel.css';
             start: function () { },
             turning: function (_e, _page, _view) { },
             turned: function (_e, _page, _view, _m) {
-              console.log(_e, _page, _view, _m, 45)
+              if (typeof defaultsOption.turned === 'function') {
+                var ReaderContent = $(defaultsOption.element);
+                ReaderContent.on('turned', function () {
+                  defaultsOption.turned(_page, _view);
+                })
+              }
             }
           }
         });
@@ -100,12 +176,14 @@ import './css/novel.css';
         let moveObj = null;
         let endObj = null;
         $wrap.on("touchstart mousedown", (e) => {
+          e.stopPropagation()
           let obj = getPoint(e);
           moveObj = {
             x: obj.clientX
           };
         });
         $wrap.on("touchmove mousemove", (e) => {
+          e.stopPropagation()
           let obj = getPoint(e);
           endObj = {
             x: obj.clientX
@@ -113,10 +191,11 @@ import './css/novel.css';
         });
 
 
-        $wrap.on("touchend mouseup", (_e) => {
+        $wrap.on("touchend mouseup", (e) => {
+          e.stopPropagation()
           if (moveObj && endObj) {
             let mis = endObj.x - moveObj.x;
-            // this.setBgstyle();
+            setBgstyle();
             if (Math.abs(mis) > 30) {
               let pageCount = $page.turn("pages"); //总页数
               let currentPage = $page.turn("page"); //当前页
@@ -140,7 +219,7 @@ import './css/novel.css';
           moveObj = null;
           endObj = null;
         });
-        // this.setBgstyle();
+        setBgstyle();
       } else {
         return;
       }
@@ -188,16 +267,42 @@ import './css/novel.css';
       }, 1500)
     }
 
+    function setBgstyle() {
+      $('.turn-page').css({ background: defaultsOption.bgColor })
+    }
+    function setFontSize() {
+      let $page = $("#pages")
+      let $content = $("#contentText")
+      let $wrap = $("#magazine")
+      $wrap.unbind()
+      $page.html('')
+      $content.html('')
+      $('#pages').css({ fontSize: defaultsOption.fontSize })
+      initPage(defaultsOption.data)
+    }
     function resetComputed(data, page) {
       let $page = $("#pages")
       let $content = $("#contentText")
       let $wrap = $("#magazine")
+      var $fontBtn = $('#setFontbtn')
+      var $nightBtn = $('#nightBtn');
+      var $dayBtn = $('#dayBtn');
+      var $bgFontbtn = $('#bgFontbtn');
+      var $smFontbtn = $('#smFontbtn');
       if ($page.turn('pages') && page) { $page.turn('destroy') }
       $page.html('')
       $content.html('')
+      $page.unbind()
       $wrap.unbind()
+      $fontBtn.unbind()
+      $nightBtn.unbind()
+      $dayBtn.unbind()
+      $bgFontbtn.unbind()
+      $smFontbtn.unbind()
+      $('.bk_container').each(function () { $(this).unbind() })
       initPage(data, page)
     }
+
 
     // 滑动iphone出现滚动
     function scrollIphone() {
@@ -224,12 +329,21 @@ import './css/novel.css';
       }
       return $.extend({}, options_to_extend, _options);
     }
+    function triggerEvent() {
+      var event = $.Event('start');
+      var ReaderContent = $(defaultsOption.element);
+      event.stopPropagation();
+      ReaderContent.trigger('turning');
+      ReaderContent.trigger('turned');
+    }
 
     function init(_options) {
       defaultsOption = prepareOptions(_options, defaultsOption);
       addDom();
       scrollIphone();
+      triggerEvent();
       resetComputed(defaultsOption.data, 1);
+      addEvent();
     }
     init(options);
   }
