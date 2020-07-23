@@ -347,9 +347,34 @@ import './css/novel.css';
       })
       if (typeof defaultsOption.checked === 'function') {
         defaultsOption.checked(defaultsOption.checkedId);
+        $('.chapternav_box').addClass('hidden_chapternav')
       }
     }
     function resetComputed(data, page) {
+      let $page = $("#pages")
+      if ($page.turn('pages') && page) { $page.turn('destroy') }
+      commonMethod()
+      initPage(data, page)
+    }
+
+    function reloadChapter(item) {
+      let $page = $("#pages")
+      let $content = $("#contentText")
+      let $wrap = $("#magazine")
+      if ($page.turn('pages') && item.pageNumber) { $page.turn('destroy') }
+      $page.html('')
+      $content.html('')
+      $wrap.unbind()
+      defaultsOption.data = item.data
+      item.title && (defaultsOption.chapterTitle = item.title)
+      initPage(item.data, item.pageNumber || 1)
+    }
+
+    function destroyReader() {
+      commonMethod()
+    }
+
+    function commonMethod() {
       let $page = $("#pages")
       let $content = $("#contentText")
       let $wrap = $("#magazine")
@@ -359,7 +384,8 @@ import './css/novel.css';
       var $bgFontbtn = $('#bgFontbtn');
       var $smFontbtn = $('#smFontbtn');
       var $showChapter = $("#showChapter")
-      if ($page.turn('pages') && page) { $page.turn('destroy') }
+      var $bkcontainer = $('.bk_container')
+      var $ItemListBox = $('.item_list_box')
       $page.html('')
       $content.html('')
       $page.unbind()
@@ -370,11 +396,9 @@ import './css/novel.css';
       $bgFontbtn.unbind()
       $smFontbtn.unbind()
       $showChapter.unbind()
-      $('.bk_container').each(function () { $(this).unbind() })
-      $('.item_list_box').each(function () { $(this).unbind() })
-      initPage(data, page)
+      $bkcontainer && $bkcontainer.each(function () { $(this).unbind() })
+      $ItemListBox && $ItemListBox.each(function () { $(this).unbind() })
     }
-
 
     // 滑动iphone出现滚动
     function scrollIphone() {
@@ -417,8 +441,10 @@ import './css/novel.css';
     }
     init(options);
     return {
-      reloadChapter: function () { console.log(13) },
-      destroyReader: function () { console.log(10) },
+      reloadChapter: function (item) {
+        reloadChapter(item)
+      },
+      destroyReader,
     }
   }
   window.NovelReader = NovelReader;
