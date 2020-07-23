@@ -26,16 +26,19 @@ import './css/novel.css';
       turnCorners: 'bl,br', //翻页方向
       turning: function () { }, // 翻页中回调
       turned: function () { }, // 翻页结束
+      checked: function () { },
+      openChapterNav: function () { },//章节选择
+      chapterNavArray: [],// 章节目录
       showFont: false,
       showNavBottom: true,
-      showChapterNav: false
+      showChapterNav: false,
+      checkedId: undefined
     }
     const colorBgArray = [{ color: '#fff' }, { color: '#567' }, { color: '#edd566' }, { color: '#f98' }, { color: '#000' }, { color: 'rgb(233, 223, 199)' }];
     function addDom() {
       var ReaderContent = $(defaultsOption.element);
       if (!defaultsOption.element) new Error('root element required');
       if (ReaderContent) {
-
         var _content = $('<div/>', {
           'class': 'reader-h5-content',
           'id': 'magazine',
@@ -60,11 +63,39 @@ import './css/novel.css';
       var _bottomNav = $('<div/>', {
         class: defaultsOption.showNavBottom ? 'bk_bottom_nav show_nav' : 'bk_bottom_nav'
       })
-      _bottomNav.html('<div class="item"><div class="item_wrap"><div class="common_nt item_hidden"></div><div class="icon_text">目录</div></div></div><div class="item" id="setFontbtn"><div class="item_wrap"><div class="common_nt icon_ft"></div><div class="icon_text">字体</div> </div></div><div id="nightBtn" class="item showngiht"><div class="item_wrap"><div class="common_nt icon_nt"></div><div class="icon_text">夜间</div> </div></div><div id="dayBtn" class="item hidenday"><div class="item_wrap"><div class="common_nt icon_daytime"></div><div class="icon_text">白天</div> </div></div>')
+      _bottomNav.html('<div id="showChapter" class="item"><div class="item_wrap"><div class="common_nt item_hidden"></div><div class="icon_text">目录</div></div></div><div class="item" id="setFontbtn"><div class="item_wrap"><div class="common_nt icon_ft"></div><div class="icon_text">字体</div> </div></div><div id="nightBtn" class="item showngiht"><div class="item_wrap"><div class="common_nt icon_nt"></div><div class="icon_text">夜间</div> </div></div><div id="dayBtn" class="item hidenday"><div class="item_wrap"><div class="common_nt icon_daytime"></div><div class="icon_text">白天</div> </div></div>')
       ReaderContent.append(_content);
       ReaderContent.append(_navPannel);
       ReaderContent.append(_bottomNav);
       ReaderContent.append(_alert);
+      if (defaultsOption.chapterNavArray.length) {
+        var _ChapterNav = $('<div/>', {
+          class: defaultsOption.showChapterNav ? 'chapternav_box' : 'chapternav_box hidden_chapternav',
+          css: {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: defaultsOption.width * 0.7 + 'px',
+            background: '#fff',
+            'touch-action': 'none',
+            'z-index': 1000,
+            height: '100%',
+            'box-shaow': '0px 6px 10px 2px rgba(106,115,133,0.36)',
+            transition: 'all ease 0.5s'
+          }
+        })
+        _ChapterNav.append('<div class="nav_bar"><div class="item_title">目录</div></div>')
+        var _navItemContent = $('<div/>', {
+          class: 'nav_title_item'
+        })
+        var itemList = '';
+        defaultsOption.chapterNavArray.forEach((item) => {
+          itemList += '<div class="item_list_box"  data-key=' + item.id + '>' + item.title + '</div>'
+        })
+        _navItemContent.append(itemList)
+        _ChapterNav.append(_navItemContent)
+        ReaderContent.append(_ChapterNav)
+      }
     }
 
     function addEvent() {
@@ -74,6 +105,7 @@ import './css/novel.css';
       var $bgFontbtn = $('#bgFontbtn');
       var $smFontbtn = $('#smFontbtn');
       var $page = $("#pages");
+      var $showChapter = $("#showChapter")
 
       $fontBtn.on('click', (e) => {
         e.stopPropagation();
@@ -124,6 +156,27 @@ import './css/novel.css';
         $('.bk_bottom_nav').toggleClass('show_nav')
         $('.nav_pannel').addClass('hidden_navpannel')
         $('.icon_ft').removeClass('current')
+        $('.chapternav_box') && $('.chapternav_box').addClass('hidden_chapternav')
+      })
+      if ($('.item_list_box')) {
+        $('.item_list_box').each(function (index) {
+          $(this).on('click', (e) => {
+            e.stopPropagation()
+            defaultsOption.checkedId = $(this).attr('data-key');
+            chapterNavItemAddCurrent()
+          })
+        })
+      }
+      $showChapter.on('click', (e) => {
+        e.stopPropagation()
+        if (defaultsOption.chapterNavArray.length == 0) {
+          if (typeof defaultsOption.openChapterNav === 'function') {
+            defaultsOption.openChapterNav('openNav')
+          }
+        }
+        $('.chapternav_box').removeClass('hidden_chapternav')
+        $('.bk_bottom_nav').removeClass('show_nav')
+        $('.nav_pannel').addClass('hidden_navpannel')
       })
     }
 
@@ -164,14 +217,14 @@ import './css/novel.css';
           page,
           when: {
             start: function () { },
-            turning: function (_e, _page, _view) { },
+            turning: function (_e, _page, _view) {
+              if (typeof defaultsOption.turning === 'function') {
+                defaultsOption.turning(_page, _view);
+              }
+            },
             turned: function (_e, _page, _view, _m) {
               if (typeof defaultsOption.turned === 'function') {
-                var ReaderContent = $(defaultsOption.element);
-                ReaderContent.unbind();
-                ReaderContent.on('turned', function () {
-                  defaultsOption.turned(_page, _view);
-                })
+                defaultsOption.turned(_page, _view);
               }
             }
           }
@@ -284,6 +337,18 @@ import './css/novel.css';
       $('#pages').css({ fontSize: defaultsOption.fontSize })
       initPage(defaultsOption.data)
     }
+    function chapterNavItemAddCurrent() {
+      $('.item_list_box').each(function () {
+        if ($(this).attr('data-key') == defaultsOption.checkedId) {
+          $(this).addClass('current_list')
+        } else {
+          $(this).removeClass('current_list')
+        }
+      })
+      if (typeof defaultsOption.checked === 'function') {
+        defaultsOption.checked(defaultsOption.checkedId);
+      }
+    }
     function resetComputed(data, page) {
       let $page = $("#pages")
       let $content = $("#contentText")
@@ -293,6 +358,7 @@ import './css/novel.css';
       var $dayBtn = $('#dayBtn');
       var $bgFontbtn = $('#bgFontbtn');
       var $smFontbtn = $('#smFontbtn');
+      var $showChapter = $("#showChapter")
       if ($page.turn('pages') && page) { $page.turn('destroy') }
       $page.html('')
       $content.html('')
@@ -303,7 +369,9 @@ import './css/novel.css';
       $dayBtn.unbind()
       $bgFontbtn.unbind()
       $smFontbtn.unbind()
+      $showChapter.unbind()
       $('.bk_container').each(function () { $(this).unbind() })
+      $('.item_list_box').each(function () { $(this).unbind() })
       initPage(data, page)
     }
 
@@ -334,11 +402,9 @@ import './css/novel.css';
       return $.extend({}, options_to_extend, _options);
     }
     function triggerEvent() {
-      var event = $.Event('start');
+      var eventop = $.Event("openChapterNav");
       var ReaderContent = $(defaultsOption.element);
-      event.stopPropagation();
-      ReaderContent.trigger('turning');
-      ReaderContent.trigger('turned');
+      ReaderContent.trigger(eventop)
     }
 
     function init(_options) {
@@ -350,6 +416,10 @@ import './css/novel.css';
       addEvent();
     }
     init(options);
+    return {
+      reloadChapter: function () { console.log(13) },
+      destroyReader: function () { console.log(10) },
+    }
   }
   window.NovelReader = NovelReader;
 })(typeof window !== "undefined" ? window : this)
