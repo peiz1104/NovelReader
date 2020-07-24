@@ -9,7 +9,8 @@ h5 Novel Reader
  element阅读器根元素；data对应章节的内容；chapterTitle章节的标题
 - 可选参数 optional
  {chapterNavArray:Array,showNavBottom:boolean,}
- chapterNavArray章节数据如果有值显示对应的nav，没有可自定义
+ chapterNavArray章节数据如果有值显示对应的nav，没有传数据你可自定义
+ chapterNavArray 的数据结构eg:[{id:1,title:'大圣归来'}]
  showNavBottom显示底部nav默认为true
- 
+
  

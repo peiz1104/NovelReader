@@ -28,11 +28,15 @@ import './css/novel.css';
       turned: function () { }, // 翻页结束
       checked: function () { },
       openChapterNav: function () { },//章节选择
+      getNextChapter: function () { },// 下一章节
+      getPrevChapter: function () { },// 上一章节
       chapterNavArray: [],// 章节目录
       showFont: false,
       showNavBottom: true,
       showChapterNav: false,
-      checkedId: undefined
+      checkedId: undefined,
+      isFirstChapter: true,
+      isLastChapter: false
     }
     const colorBgArray = [{ color: '#fff' }, { color: '#567' }, { color: '#edd566' }, { color: '#f98' }, { color: '#000' }, { color: 'rgb(233, 223, 199)' }];
     function addDom() {
@@ -90,7 +94,7 @@ import './css/novel.css';
         })
         var itemList = '';
         defaultsOption.chapterNavArray.forEach((item) => {
-          itemList += '<div class="item_list_box"  data-key=' + item.id + '>' + item.title + '</div>'
+          itemList += '<div class="item_list_box ' + (item.id == defaultsOption.checkedId ? 'current_list' : '') + '"  data-key=' + item.id + '>' + item.title + '</div>'
         })
         _navItemContent.append(itemList)
         _ChapterNav.append(_navItemContent)
@@ -191,7 +195,6 @@ import './css/novel.css';
       $content.css({ fontSize: defaultsOption.fontSize })
       let len = writeStr.length + (defaultsOption.chapterTitle ? defaultsOption.chapterTitle.length : 0); //总长度
       let cH = $content.height() || 0; //总高度
-      console.log(cH, defaultsOption.fontSize);
       let pageStrNum; //每页大概有多少个字符
       let pages = 1;
       if (cH > h) {
@@ -204,7 +207,6 @@ import './css/novel.css';
           $page.append('<div> <h6>' + defaultsOption.chapterTitle + '</h6>' + obj.curr + '</div>');
         }
         let page = pageNumber ? pageNumber : $page.turn("page") > pages ? pages : $page.turn("page");
-        console.log(page, 'currentpage');
         $page.turn({
           width: w,
           height: h,
@@ -260,15 +262,27 @@ import './css/novel.css';
                 if (currentPage > 1) {
                   $page.turn('page', currentPage - 1);
                 } else {
-                  console.log("已经是第一页")
-                  showAlert('已经是第一页');
+                  // 本章节第一页；如果是第一章节toast提示
+                  if (defaultsOption.isFirstChapter) {
+                    showAlert('已经是第一页')
+                    return
+                  }
+                  if (defaultsOption.chapterNavArray.length) {
+                    computedChapterId('F') ? showAlert('已经是第一页') : defaultsOption.getPrevChapter(defaultsOption.checkedId)
+                  } else { defaultsOption.getPrevChapter(defaultsOption.checkedId) }
                 }
               } else {
                 if (currentPage < pageCount) {
                   $page.turn('page', currentPage + 1);
                 } else {
-                  console.log("最后一页");
-                  showAlert('已经是最后一页');
+                  if (defaultsOption.isLastChapter) {
+                    // 本章节最后一页；没有其他章节toast提示
+                    showAlert('已经是最后一页');
+                    return
+                  }
+                  if (defaultsOption.chapterNavArray.length) {
+                    computedChapterId('L') ? showAlert('已经是最后一页') : defaultsOption.getNextChapter(defaultsOption.checkedId)
+                  } else { defaultsOption.getNextChapter(defaultsOption.checkedId) }
                 }
               }
             }
@@ -313,9 +327,15 @@ import './css/novel.css';
       return obj;
     }
 
+    function computedChapterId(type) {
+      if (type == 'F') return defaultsOption.checkedId == defaultsOption.chapterNavArray[0]['id']
+      var length = defaultsOption.chapterNavArray.length - 1
+      if (type == 'L') return defaultsOption.checkedId == defaultsOption.chapterNavArray[length]['id']
+    }
+
     function showAlert(msg) {
       let $alert = $("#alert");
-      clearTimeout(timer);
+      timer && clearTimeout(timer);
       $alert.text(msg);
       $alert.fadeIn();
       timer = setTimeout(function () {
@@ -332,6 +352,7 @@ import './css/novel.css';
       let $content = $("#contentText")
       let $wrap = $("#magazine")
       $wrap.unbind()
+      $page.unbind('turned').unbind('turning').unbind('start')
       $page.html('')
       $content.html('')
       $('#pages').css({ fontSize: defaultsOption.fontSize })
@@ -366,6 +387,7 @@ import './css/novel.css';
       $content.html('')
       $wrap.unbind()
       defaultsOption.data = item.data
+      defaultsOption.checkedId = item.checkedId
       item.title && (defaultsOption.chapterTitle = item.title)
       initPage(item.data, item.pageNumber || 1)
     }
@@ -433,6 +455,8 @@ import './css/novel.css';
     }
 
     function init(_options) {
+      if (!_options.checkedId) new Error('参数缺失【当前章节id】')
+      if (!_options.checkedId && _options.chapterNavArray && _options.chapterNavArray.length) defaultsOption.checkedId = _options.chapterNavArray[0]['id']
       defaultsOption = prepareOptions(_options, defaultsOption);
       addDom();
       scrollIphone();

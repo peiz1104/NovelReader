@@ -1,3 +1,19 @@
+* {
+  padding: 0;
+  border: 0;
+  box-sizing: border-box;
+  margin: 0;
+}
+button, input, optgroup, select, textarea {
+  color: inherit;
+  font: inherit;
+  margin: 0;
+  outline: none;
+  line-height: normal;
+}
+button:focus,input:focus,textarea:focus,select:focus,a:focus,li:focus{
+  outline: none;
+}
 .reader-h5-content .pages_box {
   width: 100%;
   height: 100%;
