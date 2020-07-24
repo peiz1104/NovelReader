@@ -16,3 +16,4 @@ yarn-debug.log*
 tmp
 bundle-stats.json
 .vscode
+.npmignore

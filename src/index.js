@@ -18,7 +18,7 @@ import './css/novel.css';
       bgColor: '#e9dfc7',
       fontSize: 14,
       chapterTitle: '第一章 大圣归来',
-      with: 0,
+      width: 0,
       height: 0,
       data: '',// 小说内容
       elevation: 80, //翻页阴影
@@ -419,7 +419,8 @@ import './css/novel.css';
     function prepareOptions(options, options_to_extend) {
       var _options = {};
       if ((typeof options === 'string') || (options instanceof Array)) {
-        _options.text = options;
+        showAlert('初始化optins必须为对象');
+        new Error('options must be object')
       } else {
         _options = options;
       }
