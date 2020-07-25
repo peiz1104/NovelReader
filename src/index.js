@@ -270,17 +270,12 @@ export class BKNovelReader {
           x: obj.clientX
         };
       });
-      $wrap.on("touchmove mousemove", (e) => {
+      $wrap.on("touchend mouseup", (e) => {
         e.stopPropagation()
         let obj = this.getPoint(e);
         endObj = {
           x: obj.clientX
         };
-      });
-
-
-      $wrap.on("touchend mouseup", (e) => {
-        e.stopPropagation()
         if (moveObj && endObj) {
           let mis = endObj.x - moveObj.x;
           this.setBgstyle();
@@ -350,8 +345,8 @@ export class BKNovelReader {
 
   getPoint(e) {
     let obj = e;
-    if (e.targetTouches && e.targetTouches.length > 0) {
-      obj = e.targetTouches[0];
+    if (e.targetTouches && e.targetTouches.length > 0 || (e.originalEvent && e.originalEvent.targetTouches && e.originalEvent.targetTouches.length > 0) || (e.originalEvent.changedTouches && e.originalEvent.changedTouches.length > 0)) {
+      obj = e.targetTouches && e.targetTouches.length > 0 ? e.targetTouches[0] : e.originalEvent.targetTouches && e.originalEvent.targetTouches.length > 0 ? e.originalEvent.targetTouches[0] : e.originalEvent.changedTouches[0];
     }
     return obj;
   }
@@ -377,6 +372,7 @@ export class BKNovelReader {
   }
   setBgstyle() {
     $('.turn-page').css({ background: this.defaultsOption.bgColor })
+    $('#magazine').css({ background: this.defaultsOption.bgColor })
   }
 
   setFontSize() {
