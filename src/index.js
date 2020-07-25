@@ -270,12 +270,16 @@ export class BKNovelReader {
           x: obj.clientX
         };
       });
-      $wrap.on("touchend mouseup", (e) => {
+      $wrap.on("touchmove mousemove", (e) => {
         e.stopPropagation()
         let obj = this.getPoint(e);
+        if (!moveObj) { moveObj = { x: obj.clientX } }
         endObj = {
           x: obj.clientX
         };
+      });
+      $wrap.on("touchend mouseup", (e) => {
+        e.stopPropagation()
         if (moveObj && endObj) {
           let mis = endObj.x - moveObj.x;
           this.setBgstyle();
