@@ -2,7 +2,7 @@
   "name": "novelreader",
   "version": "1.0.1",
   "description": "h5 novel reader",
-  "main": "dist/novelReader.js",
+  "main": "src/index.js",
   "scripts": {
     "build": "rm -rf dist && webpack --progress --mode production",
     "dev": "webpack --watch",

@@ -9,7 +9,7 @@
 import $ from 'jquery';
 import './js/turn.js';
 import './css/novel.css';
-class BKNovelReader {
+export class BKNovelReader {
   constructor(options) {
     this._options = {
       bgColor: '#e9dfc7',
@@ -39,6 +39,7 @@ class BKNovelReader {
     this.colorBgArray = [{ color: '#fff' }, { color: '#567' }, { color: '#edd566' }, { color: '#f98' }, { color: '#000' }, { color: 'rgb(233, 223, 199)' }];
     this.init()
     this.scrollIphone()
+    this.timer = null
   }
 
   init() {
@@ -54,7 +55,7 @@ class BKNovelReader {
   prepareOptions(options, options_to_extend) {
     var _options = {};
     if ((typeof options === 'string') || (options instanceof Array)) {
-      showAlert('初始化optins必须为对象');
+      this.showAlert('初始化optins必须为对象');
       new Error('options must be object')
     } else {
       _options = options;
@@ -213,25 +214,26 @@ class BKNovelReader {
   initPage(writeStr, pageNumber) {
     if (!writeStr) return;
     let defaultsOption = this.defaultsOption;
+    let title = defaultsOption.chapterTitle || defaultsOption.title
     let $wrap = $("#magazine");
     let $page = $("#pages");
     let w = $page.width(); //窗口的宽度
     let h = ($page.height() || $(window).height()); //窗口的高度
     let $content = $("#contentText");
-    $content.html('<h4>' + defaultsOption.chapterTitle + '</h4>' + writeStr);
+    $content.html('<h4>' + title + '</h4>' + writeStr);
     $content.css({ fontSize: defaultsOption.fontSize })
-    let len = writeStr.length + (defaultsOption.chapterTitle ? defaultsOption.chapterTitle.length : 0); //总长度
+    let len = writeStr.length + (title ? title.length : 0); //总长度
     let cH = $content.height() || 0; //总高度
     let pageStrNum; //每页大概有多少个字符
     let pages = 1;
     if (cH > h) {
       pageStrNum = ((h - 50) / cH) * len; //每页大概有多少个字符
       var obj = this.overflowhiddenTow($content, writeStr, h - 50, pageStrNum);
-      $page.append('<div> <h4>' + defaultsOption.chapterTitle + '</h4>' + obj.curr + '</div>');
+      $page.append('<div> <h4>' + title + '</h4>' + obj.curr + '</div>');
       while (obj.next && obj.next.length > 0) {
         pages++;
         obj = this.overflowhiddenTow($content, obj.next, h - 50, pageStrNum);
-        $page.append('<div> <h6>' + defaultsOption.chapterTitle + '</h6>' + obj.curr + '</div>');
+        $page.append('<div> <h6>' + title + '</h6>' + obj.curr + '</div>');
       }
       let page = pageNumber ? pageNumber : $page.turn("page") > pages ? pages : $page.turn("page");
       $page.turn({
@@ -356,6 +358,8 @@ class BKNovelReader {
 
   computedChapterId(type) {
     let defaultsOption = this.defaultsOption
+    defaultsOption.isFirstChapter = false
+    defaultsOption.isLastChapter = false
     if (type == 'F') return defaultsOption.checkedId == defaultsOption.chapterNavArray[0]['id']
     var length = defaultsOption.chapterNavArray.length - 1
     if (type == 'L') return defaultsOption.checkedId == defaultsOption.chapterNavArray[length]['id']
@@ -363,12 +367,12 @@ class BKNovelReader {
 
   showAlert(msg) {
     let $alert = $("#alert");
-    timer && clearTimeout(timer);
+    this.timer && clearTimeout(this.timer);
     $alert.text(msg);
     $alert.fadeIn();
-    timer = setTimeout(function () {
+    this.timer = setTimeout(function () {
       $alert.fadeOut();
-      clearTimeout(timer);
+      clearTimeout(this.timer);
     }, 1500)
   }
   setBgstyle() {
@@ -384,7 +388,7 @@ class BKNovelReader {
     $page.html('')
     $content.html('')
     $('#pages').css({ fontSize: this.defaultsOption.fontSize })
-    initPage(this.defaultsOption.data)
+    this.initPage(this.defaultsOption.data)
   }
   chapterNavItemAddCurrent() {
     let defaultsOption = this.defaultsOption
@@ -417,7 +421,7 @@ class BKNovelReader {
     $wrap.unbind()
     defaultsOption.data = item.data
     defaultsOption.checkedId = item.checkedId
-    item.title && (defaultsOption.chapterTitle = item.title)
+    item.title && (defaultsOption.chapterTitle = item.chapterTitle || item.title)
     this.initPage(item.data, item.pageNumber || 1)
   }
   destroyReader() {
