@@ -1,6 +1,6 @@
 {
   "name": "novelreader",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "h5 novel reader",
   "main": "src/index.js",
   "scripts": {
