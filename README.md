@@ -6,8 +6,8 @@ h5 Novel Reader
  ##### 属性
 |属性|说明|类型|默认值|
 |:-|:-:|:-:|-:|
-|element|阅读器根元素|string required (eg:'#readerContent')|-|
-|data|阅读内容|string required|-|
+|element|阅读器根元素(required)|string  (eg:'#readerContent')|-|
+|data|阅读内容(required)|string |-|
 |chapterTitle|章节标题|string|-|
 |bgColor|阅读器背景色|string|#e9dfc7|
 |checkedId|当前章节id|string number undefined|undefined|
@@ -21,7 +21,7 @@ h5 Novel Reader
 |:-|:-:|-:|
 |turning|翻页过程调用|(currentPage)=>viod|
 |turned|翻页结束调用|(currentPage)=>viod|
-|checked|点击选择某一章节|(id)=>viod(返回当前章节id)|
-|getNextChapter|下一章节|(id)=>viod(当前章节id)|
-|getPrevChapter|上一章节|(id)=>viod(当前章节id)|
+|checked|点击选择某一章节 (返回当前章节id)|(id)=>viod|
+|getNextChapter|下一章节(返回当前章节id)|(id)=>viod|
+|getPrevChapter|上一章节(返回当前章节id)|(id)=>viod|
  
