@@ -11,7 +11,14 @@ import './js/turn.js';
 import './css/novel.css';
 export class BKNovelReader {
   constructor(options) {
-    this._options = {
+    this.defaultsOption = options
+    this.init()
+    this.scrollIphone()
+    this.timer = null
+  }
+
+  get _options() {
+    return {
       bgColor: '#e9dfc7',
       fontSize: 14,
       chapterTitle: '',
@@ -28,6 +35,7 @@ export class BKNovelReader {
       getNextChapter: function () { },// 下一章节
       getPrevChapter: function () { },// 上一章节
       chapterNavArray: [],// 章节目录
+      colorBgArray: [{ color: '#fff' }, { color: '#567' }, { color: '#edd566' }, { color: '#f98' }, { color: '#000' }, { color: 'rgb(233, 223, 199)' }],
       showFont: false,
       showNavBottom: true,
       showChapterNav: false,
@@ -35,11 +43,6 @@ export class BKNovelReader {
       isFirstChapter: true,
       isLastChapter: false
     }
-    this.defaultsOption = options
-    this.colorBgArray = [{ color: '#fff' }, { color: '#567' }, { color: '#edd566' }, { color: '#f98' }, { color: '#000' }, { color: 'rgb(233, 223, 199)' }];
-    this.init()
-    this.scrollIphone()
-    this.timer = null
   }
 
   init() {
@@ -164,7 +167,7 @@ export class BKNovelReader {
     $('.bk_container').each(function (index) {
       $(this).on('click', (e) => {
         e.stopPropagation()
-        defaultsOption.bgColor = that.colorBgArray[index].color
+        defaultsOption.bgColor = that.defaultsOption.colorBgArray[index].color
         that.setBgstyle();
       })
     })
