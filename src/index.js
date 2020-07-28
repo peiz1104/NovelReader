@@ -193,12 +193,10 @@ export class BKNovelReader {
       $('.chapternav_box') && $('.chapternav_box').addClass('hidden_chapternav')
     })
     if ($('.item_list_box')) {
-      $('.item_list_box').each(function (index) {
-        $(this).on('click', (e) => {
-          e.stopPropagation()
-          defaultsOption.checkedId = $(this).attr('data-key');
-          that.chapterNavItemAddCurrent()
-        })
+      $('.nav_title_item').on('click', '.item_list_box', function (e) {
+        e.stopPropagation()
+        defaultsOption.checkedId = $(this).attr('data-key');
+        that.chapterNavItemAddCurrent(true)
       })
     }
     $showChapter.on('click', (e) => {
@@ -393,7 +391,7 @@ export class BKNovelReader {
     $('#pages').css({ fontSize: this.defaultsOption.fontSize })
     this.initPage(this.defaultsOption.data)
   }
-  chapterNavItemAddCurrent() {
+  chapterNavItemAddCurrent(reloadChapterStatus) {
     let defaultsOption = this.defaultsOption
     $('.item_list_box').each(function () {
       if ($(this).attr('data-key') == defaultsOption.checkedId) {
@@ -402,7 +400,7 @@ export class BKNovelReader {
         $(this).removeClass('current_list')
       }
     })
-    if (typeof defaultsOption.checked === 'function') {
+    if (typeof defaultsOption.checked === 'function' && reloadChapterStatus) {
       defaultsOption.checked(defaultsOption.checkedId);
       $('.chapternav_box').addClass('hidden_chapternav')
     }
@@ -426,6 +424,7 @@ export class BKNovelReader {
     defaultsOption.checkedId = item.checkedId
     item.title && (defaultsOption.chapterTitle = item.chapterTitle || item.title)
     this.initPage(item.data, item.pageNumber || 1)
+    this.chapterNavItemAddCurrent(false)
   }
   destroyReader() {
     this.commonMethod()
@@ -441,7 +440,7 @@ export class BKNovelReader {
     var $smFontbtn = $('#smFontbtn');
     var $showChapter = $("#showChapter")
     var $bkcontainer = $('.bk_container')
-    var $ItemListBox = $('.item_list_box')
+    var $ItemListBox = $('.nav_title_item')
     $page.html('')
     $content.html('')
     $page.unbind()
@@ -453,7 +452,7 @@ export class BKNovelReader {
     $smFontbtn.unbind()
     $showChapter.unbind()
     $bkcontainer && $bkcontainer.each(function () { $(this).unbind() })
-    $ItemListBox && $ItemListBox.each(function () { $(this).unbind() })
+    $ItemListBox && $ItemListBox.unbind()
   }
   triggerEvent() {
     var eventop = $.Event("openChapterNav");
