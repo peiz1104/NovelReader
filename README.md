@@ -3,7 +3,8 @@ h5 Novel Reader
 ### 项目中使用
 - 安装：npm i novelreader 
 ### 配置项说明
- ##### 属性
+- 暂时不支持服务端渲染（ssr页面）
+##### 属性
 |属性|说明|类型|默认值|
 |:-|:-:|:-:|-:|
 |element|阅读器根元素(required)|string  (eg:'#readerContent')|-|
