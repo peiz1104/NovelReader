@@ -71,6 +71,7 @@ export class BKNovelReader {
     var ReaderContent = $(defaultsOption.element);
     if (!defaultsOption.element) new Error('root element required');
     if (ReaderContent) {
+      ReaderContent.css({ fontSize: '16px' })
       var _content = $('<div/>', {
         'class': 'reader-h5-content',
         'id': 'magazine',

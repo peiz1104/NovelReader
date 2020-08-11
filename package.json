@@ -2,7 +2,7 @@
   "name": "novelreader",
   "version": "1.0.5",
   "description": "h5 novel reader",
-  "main": "src/index.js",
+  "main": "dist/novelReader.js",
   "scripts": {
     "build": "rm -rf dist && webpack --progress --mode production",
     "dev": "webpack --watch",
@@ -26,7 +26,6 @@
     "@babel/core": "^7.9.6",
     "@babel/polyfill": "^7.8.7",
     "@babel/preset-env": "^7.9.6",
-    "@types/jquery": "^3.5.0",
     "autoprefixer": "^9.7.6",
     "babel-loader": "^8.1.0",
     "clean-webpack-plugin": "^3.0.0",
