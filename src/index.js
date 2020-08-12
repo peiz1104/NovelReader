@@ -185,7 +185,6 @@ export class BKNovelReader {
       this.setFontSize()
     })
     $page.on('click', (e) => {
-      e.stopPropagation();
       defaultsOption.showNavBottom = !defaultsOption.showNavBottom;
       defaultsOption.showChapterNav = false;
       $('.bk_bottom_nav').toggleClass('show_nav')
@@ -229,12 +228,12 @@ export class BKNovelReader {
     let pageStrNum; //每页大概有多少个字符
     let pages = 1;
     if (cH > h) {
-      pageStrNum = ((h - 50) / cH) * len; //每页大概有多少个字符
-      var obj = this.overflowhiddenTow($content, writeStr, h - 50, pageStrNum);
+      pageStrNum = ((h - 70) / cH) * len; //每页大概有多少个字符
+      var obj = this.overflowhiddenTow($content, writeStr, h - 70, pageStrNum);
       $page.append('<div> <h4>' + title + '</h4>' + obj.curr + '</div>');
       while (obj.next && obj.next.length > 0) {
         pages++;
-        obj = this.overflowhiddenTow($content, obj.next, h - 50, pageStrNum);
+        obj = this.overflowhiddenTow($content, obj.next, h - 70, pageStrNum);
         $page.append('<div> <h6>' + title + '</h6>' + obj.curr + '</div>');
       }
       let page = pageNumber ? pageNumber : $page.turn("page") > pages ? pages : $page.turn("page");

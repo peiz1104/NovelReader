@@ -1878,14 +1878,14 @@ import jQuery from 'jquery'
 
         var data = this.data().f;
 
-        if (!data.disabled && data.point) {
+        if (data && !data.disabled && data.point) {
           var event = $.Event('released');
           this.trigger(event, [data.point]);
           if (!event.isDefaultPrevented())
             flipMethods.hideFoldedPage.call(this, true);
         }
 
-        data.corner = null;
+        if (data) data.corner = null;
 
       },
 

@@ -153,7 +153,7 @@ button:focus,input:focus,textarea:focus,select:focus,a:focus,li:focus{
   opacity: 0.9;
   position: fixed;
   bottom: 0;
-  z-index: 9999;
+  z-index: 400;
   display: none;
 }
  .show_nav{
