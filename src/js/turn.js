@@ -217,7 +217,7 @@ import jQuery from 'jquery'
           vendor = getPrefix();
         }
 
-        var i, data = this.data(), ch = this.children();
+        var i, data = this.data() || {}, ch = this.children();
 
         opts = $.extend({ width: this.width(), height: this.height() }, turnOptions, opts);
         data.opts = opts;
@@ -873,7 +873,7 @@ import jQuery from 'jquery'
 
       pages: function (pages) {
 
-        var data = this.data();
+        var data = this.data() || {};
 
         if (pages) {
           if (pages < data.totalPages) {
@@ -1829,7 +1829,7 @@ import jQuery from 'jquery'
 
       _eventStart: function (e) {
 
-        var data = this.data().f;
+        var data = this.data().f || {};
 
         if (!data.disabled && !this.flip('isTurning')) {
           data.corner = flipMethods._cornerActivated.call(this, e);
@@ -1845,7 +1845,7 @@ import jQuery from 'jquery'
 
       _eventMove: function (e) {
 
-        var data = this.data().f;
+        var data = this.data().f || {};
 
         if (!data.disabled) {
           e = (isTouch) ? e.originalEvent.touches : [e];

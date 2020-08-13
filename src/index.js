@@ -70,6 +70,7 @@ export class BKNovelReader {
     let defaultsOption = this.defaultsOption
     var ReaderContent = $(defaultsOption.element);
     if (!defaultsOption.element) new Error('root element required');
+    if (!ReaderContent) new Error('Hi Please check the life cycle of your components, can’t get Dom 😁')
     if (ReaderContent) {
       ReaderContent.css({ fontSize: '16px' })
       var _content = $('<div/>', {
@@ -412,7 +413,6 @@ export class BKNovelReader {
     this.initPage(data, page)
   }
   reloadChapter(item) {
-    let defaultsOption = this.defaultsOption
     let $page = $("#pages")
     let $content = $("#contentText")
     let $wrap = $("#magazine")
@@ -420,9 +420,8 @@ export class BKNovelReader {
     $page.html('')
     $content.html('')
     $wrap.unbind()
-    defaultsOption.data = item.data
-    defaultsOption.checkedId = item.checkedId
-    item.title && (defaultsOption.chapterTitle = item.chapterTitle || item.title)
+    this.defaultsOption = { ...this.defaultsOption, ...item }
+    item.title && (this.defaultsOption.chapterTitle = item.chapterTitle || item.title)
     this.initPage(item.data, item.pageNumber || 1)
     this.chapterNavItemAddCurrent(false)
   }
