@@ -1,6 +1,6 @@
 {
   "name": "novelreader",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "h5 novel reader",
   "main": "dist/novelReader.js",
   "scripts": {
