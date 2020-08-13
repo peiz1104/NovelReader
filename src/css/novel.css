@@ -34,8 +34,6 @@ button:focus,input:focus,textarea:focus,select:focus,a:focus,li:focus{
 .reader-h5-content .contentText_box {
   width: 100%;
 }
-
-/* 这里是内容的样式,修改时候,一起修改 */
 .reader-h5-content div.turn-page,
 .contentText_box {
   white-space: pre-wrap;
@@ -105,30 +103,6 @@ button:focus,input:focus,textarea:focus,select:focus,a:focus,li:focus{
   display: inline-block;
   margin-right: 0.625em;
 }
-
- .child_mod .bg1{
-  background: #fff;
-}
-
- .child_mod .bg2 {
-  background: #567;
-}
-
- .child_mod .bg3 {
-  background: #edd566;
-}
-
-.child_mod .bg4 {
-  background: #f98;
-}
-
- .child_mod .bg5 {
-  background: #000;
-}
- .child_mod .bg6{
-  background: rgb(233, 223, 199);
-}
-
  .bk_container_current {
   position: absolute;
   top: 0;
@@ -138,8 +112,6 @@ button:focus,input:focus,textarea:focus,select:focus,a:focus,li:focus{
   border-radius: 0.9375rem;
   border: 1px solid #ff7800;
 }
-
-
  .bk_bottom_nav .item_wrap {
   width: 30px;
   margin: 0 auto;

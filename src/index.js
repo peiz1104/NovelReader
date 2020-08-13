@@ -48,6 +48,7 @@ export class BKNovelReader {
   init() {
     if (!this.defaultsOption.checkedId) new Error('参数缺失【当前章节id】')
     if (!this.defaultsOption.checkedId && this.defaultsOption.chapterNavArray && this.defaultsOption.chapterNavArray.length) this.defaultsOption.checkedId = this.defaultsOption.chapterNavArray[0]['id']
+    if (this.defaultsOption.colorBgArray && this.defaultsOption.colorBgArray.length === 0) this.defaultsOption.colorBgArray = this._options.colorBgArray
     this.prepareOptions(this.defaultsOption, this._options);
     this.addDom();
     this.triggerEvent();
@@ -89,7 +90,15 @@ export class BKNovelReader {
     var _navPannel = $('<div/>', {
       class: defaultsOption.showFont ? 'nav_pannel' : 'nav_pannel hidden_navpannel',
     })
-    _navPannel.html('<div class="child_mod"><span>字号</span><button id="bgFontbtn" class="fontsize_button">大</button><button id="smFontbtn" class="fontsize_button">小</button></div><div class="child_mod"> <span class="bgtext">背景</span><div class="bk_container bg1"><div class="bk_container_current"></div></div><div class="bk_container bg2"><div class="bk_container_current"></div></div><div class="bk_container bg3"><div class="bk_container_current"></div></div><div class="bk_container bg4"><div class="bk_container_current"></div></div><div class="bk_container bg5"><div class="bk_container_current"></div></div><div class="bk_container bg6"><div class="bk_container_current"></div></div></div>')
+    _navPannel.html('<div class="child_mod"><span>字号</span><button id="bgFontbtn" class="fontsize_button">大</button><button id="smFontbtn" class="fontsize_button">小</button></div>')
+    if (this.defaultsOption.colorBgArray && this.defaultsOption.colorBgArray.length) {
+      var _bgPannel = '';
+      this.defaultsOption.colorBgArray.forEach((item, index) => {
+        _bgPannel += '<div class="bk_container" style="background:' + item.color + '"><div class="bk_container_current"></div></div>'
+      })
+      let _bgSet = '<div class="child_mod"> <span class="bgtext">背景</span>' + _bgPannel + '</div>'
+      _navPannel.append(_bgSet)
+    }
     var _alert = $('<div/>', {
       class: 'alert_box',
       id: 'alert'
@@ -133,7 +142,6 @@ export class BKNovelReader {
   }
 
   addEvent() {
-    var defaultsOption = this.defaultsOption;
     var that = this;
     var $fontBtn = $('#setFontbtn');
     var $nightBtn = $('#nightBtn');
@@ -155,7 +163,7 @@ export class BKNovelReader {
       $nightBtn.addClass('hidennight')
       $dayBtn.removeClass('hidenday')
       $dayBtn.addClass('showday')
-      defaultsOption.bgColor = '#000'
+      this.defaultsOption.bgColor = '#000'
       this.setBgstyle()
     })
     $dayBtn.on('click', (e) => {
@@ -164,31 +172,31 @@ export class BKNovelReader {
       $nightBtn.addClass('showngiht')
       $dayBtn.removeClass('showday')
       $dayBtn.addClass('hidenday')
-      defaultsOption.bgColor = '#e9dfc7'
+      this.defaultsOption.bgColor = '#e9dfc7'
       this.setBgstyle()
     })
     $('.bk_container').each(function (index) {
       $(this).on('click', (e) => {
         e.stopPropagation()
-        defaultsOption.bgColor = that.defaultsOption.colorBgArray[index].color
+        that.defaultsOption.bgColor = that.defaultsOption.colorBgArray[index].color
         that.setBgstyle();
       })
     })
     $bgFontbtn.on('click', (e) => {
       e.stopPropagation();
-      if (defaultsOption.fontSize > 20) return
-      defaultsOption.fontSize += 1
+      if (this.defaultsOption.fontSize > 20) return
+      this.defaultsOption.fontSize += 1
       this.setFontSize()
     })
     $smFontbtn.on('click', (e) => {
       e.stopPropagation();
-      if (defaultsOption.fontSize < 12) return
-      defaultsOption.fontSize -= 1
+      if (this.defaultsOption.fontSize < 12) return
+      this.defaultsOption.fontSize -= 1
       this.setFontSize()
     })
     $page.on('click', (e) => {
-      defaultsOption.showNavBottom = !defaultsOption.showNavBottom;
-      defaultsOption.showChapterNav = false;
+      this.defaultsOption.showNavBottom = !this.defaultsOption.showNavBottom;
+      this.defaultsOption.showChapterNav = false;
       $('.bk_bottom_nav').toggleClass('show_nav')
       $('.nav_pannel').addClass('hidden_navpannel')
       $('.icon_ft').removeClass('current')
@@ -197,15 +205,15 @@ export class BKNovelReader {
     if ($('.item_list_box')) {
       $('.nav_title_item').on('click', '.item_list_box', function (e) {
         e.stopPropagation()
-        defaultsOption.checkedId = $(this).attr('data-key');
+        that.defaultsOption.checkedId = $(this).attr('data-key');
         that.chapterNavItemAddCurrent(true)
       })
     }
     $showChapter.on('click', (e) => {
       e.stopPropagation()
-      if (defaultsOption.chapterNavArray.length == 0) {
-        if (typeof defaultsOption.openChapterNav === 'function') {
-          defaultsOption.openChapterNav('openNav')
+      if (this.defaultsOption.chapterNavArray.length == 0) {
+        if (typeof this.defaultsOption.openChapterNav === 'function') {
+          this.defaultsOption.openChapterNav('openNav')
         }
       }
       $('.chapternav_box').removeClass('hidden_chapternav')
@@ -390,7 +398,7 @@ export class BKNovelReader {
     $page.unbind('turned').unbind('turning').unbind('start')
     $page.html('')
     $content.html('')
-    $('#pages').css({ fontSize: this.defaultsOption.fontSize })
+    $page.css({ fontSize: this.defaultsOption.fontSize + 'px' })
     this.initPage(this.defaultsOption.data)
   }
   chapterNavItemAddCurrent(reloadChapterStatus) {
@@ -424,7 +432,8 @@ export class BKNovelReader {
     this.defaultsOption = { ...this.defaultsOption, ...item }
     item.title && (this.defaultsOption.chapterTitle = item.chapterTitle || item.title)
     this.initPage(item.data, item.pageNumber || 1)
-    this.chapterNavItemAddCurrent(false)
+    if (this.defaultsOption.chapterNavArray && this.defaultsOption.chapterNavArray.length) this.chapterNavItemAddCurrent(false)
+
   }
   destroyReader() {
     this.commonMethod()
