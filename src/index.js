@@ -142,7 +142,8 @@ export class BKNovelReader {
     var $smFontbtn = $('#smFontbtn');
     var $page = $("#pages");
     var $showChapter = $("#showChapter")
-
+    $('.nav_pannel').on('click mousemove touchmove', (e) => { e.stopPropagation() })
+    $('.bk_bottom_nav').on('click mousemove touchmove', (e) => { e.stopPropagation() })
     $fontBtn.on('click', (e) => {
       e.stopPropagation();
       $('.nav_pannel').toggleClass('hidden_navpannel')
