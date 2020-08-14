@@ -19,7 +19,7 @@ export class BKNovelReader {
 
   get _options() {
     return {
-      bgColor: '#e9dfc7',
+      bgColor: '#F5E5C3',
       fontSize: 14,
       chapterTitle: '',
       width: 0,
@@ -35,7 +35,7 @@ export class BKNovelReader {
       getNextChapter: function () { },// 下一章节
       getPrevChapter: function () { },// 上一章节
       chapterNavArray: [],// 章节目录
-      colorBgArray: [{ color: '#fff' }, { color: '#567' }, { color: '#edd566' }, { color: '#f98' }, { color: '#000' }, { color: 'rgb(233, 223, 199)' }],
+      colorBgArray: [{ color: '#fff' }, { color: '#567' }, { color: '#edd566' }, { color: '#f98' }, { color: '#0F1014' }, { color: 'rgb(233, 223, 199)' }],
       showFont: false,
       showNavBottom: true,
       showChapterNav: false,
@@ -163,7 +163,7 @@ export class BKNovelReader {
       $nightBtn.addClass('hidennight')
       $dayBtn.removeClass('hidenday')
       $dayBtn.addClass('showday')
-      this.defaultsOption.bgColor = '#000'
+      this.defaultsOption.bgColor = '#0F1014'
       this.setBgstyle()
     })
     $dayBtn.on('click', (e) => {
@@ -172,7 +172,7 @@ export class BKNovelReader {
       $nightBtn.addClass('showngiht')
       $dayBtn.removeClass('showday')
       $dayBtn.addClass('hidenday')
-      this.defaultsOption.bgColor = '#e9dfc7'
+      this.defaultsOption.bgColor = '#F5E5C3'
       this.setBgstyle()
     })
     $('.bk_container').each(function (index) {
