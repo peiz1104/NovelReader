@@ -40,6 +40,9 @@ button:focus,input:focus,textarea:focus,select:focus,a:focus,li:focus{
   box-sizing: border-box;
   padding: 0px 10px;
 }
+.reader-h5-content div.turn-page h4,h6{
+  padding-top: 4px;
+}
  .alert_box {
   position: absolute;
   bottom: 50%;
